@@ -91,8 +91,14 @@ look_for <- function(data,
         res$type[i] <- paste(typeof(data[[v]]), collapse = ", ")
         if (is.factor(data[[v]]))
           res$levels[i] <- paste(levels(data[[v]]), collapse = "; ")
-        if (inherits(data[[v]], "labelled")) {
-          res$value_labels[i] <- paste(names(val_labels(data[[v]], prefixed=TRUE)), collapse = "; ")
+        if (
+          inherits(data[[v]], "labelled") || 
+          inherits(data[[v]], "haven_labelled")
+        ) {
+          res$value_labels[i] <- jsonlite::toJSON(
+            as.list(searchable::invert(val_labels(data[[v]]))),
+            auto_unbox = TRUE
+          )
           res$na_values[i] <- paste(na_values(data[[v]]), collapse = ", ")
           res$na_range[i] <- paste(na_range(data[[v]]), collapse = "-")
         }
